@@ -9,10 +9,8 @@
 class CNaviSessAcquireBase : public QSharedData
 {
 public:
-	CNaviSessAcquireBase(quint64 sid = 0) : sessid(sid) {}
 	virtual ~CNaviSessAcquireBase() {}
 	virtual void notify() = 0;
-	const size_t sessid;
 };
 
 class CNaviSessRequestBase : public QSharedData
@@ -28,6 +26,12 @@ template <class T, class ...Args> inline
 QExplicitlySharedDataPointer<CNaviSessRequestBase> MakeQExplicitSharedReq(Args... Types)
 {
 	return QExplicitlySharedDataPointer<CNaviSessRequestBase>(new T(Types...));
+}
+
+template <class T, class ...Args> inline
+QExplicitlySharedDataPointer<CNaviSessAcquireBase> MakeQExplicitSharedAcq(Args... Types)
+{
+	return QExplicitlySharedDataPointer<CNaviSessAcquireBase>(new T(Types...));
 }
 
 class QNaviSessThread : public QThread

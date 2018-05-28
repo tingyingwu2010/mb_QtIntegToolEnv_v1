@@ -9,19 +9,13 @@ public:
 class CNaviSessEndReq : public CNaviSessRequestBase
 {
 public:
-	virtual CNaviSessAcquireBase* getAquirement() final 
-	{
-		return new CNaviSessEndAcq;
-	}
-
 	virtual QExplicitlySharedDataPointer<CNaviSessAcquireBase> getSharedAquirement() final
 	{
-		return QExplicitlySharedDataPointer<CNaviSessAcquireBase>(new CNaviSessEndAcq);
+		return MakeQExplicitSharedAcq<CNaviSessEndAcq>();
 	}
 };
 
-QNaviSessThread::QNaviSessThread(QObject *parent)
-	: QThread(parent)
+QNaviSessThread::QNaviSessThread(QObject *parent) : QThread(parent)
 {
 
 }
