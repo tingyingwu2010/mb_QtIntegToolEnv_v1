@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QIteWindowClass</class>
+ <widget class="QMainWindow" name="QIteWindowClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1022</width>
+    <height>802</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QIteWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QToolBox" name="toolBox">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="page">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>732</width>
+          <height>675</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Route Plan</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QTabWidget" name="tabWidget">
+           <property name="currentIndex">
+            <number>2</number>
+           </property>
+           <widget class="QWidget" name="tab">
+            <attribute name="title">
+             <string>Configuration</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="tab_2">
+            <attribute name="title">
+             <string>Operation</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="tab_3">
+            <attribute name="title">
+             <string>dev test</string>
+            </attribute>
+            <widget class="QPushButton" name="routePlanDevTestBtn">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>10</y>
+               <width>75</width>
+               <height>23</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>test</string>
+             </property>
+            </widget>
+           </widget>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidget"/>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidget_2"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="page_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>732</width>
+          <height>675</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Page 2</string>
+        </attribute>
+       </widget>
+      </widget>
+      <widget class="QMapWidget" name="widget" native="true"/>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1022</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QMapWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">qmapwidget.h</header>
+   <container>1</container>
+   <slots>
+    <signal>loadCameraFailed()</signal>
+    <signal>changeAngle(int)</signal>
+    <slot>setMapShow(bool)</slot>
+    <slot>setRoadShow(bool)</slot>
+    <slot>openInGoogleMap()</slot>
+    <slot>setStart()</slot>
+    <slot>setEnd()</slot>
+    <slot>setWayPoint()</slot>
+    <slot>copyRoutePlan()</slot>
+    <slot>pasteInformation()</slot>
+    <slot>jumpToCity(QTreeWidgetItem*)</slot>
+    <slot>jumpToManeuver(QListWidgetItem*)</slot>
+    <slot>setRoadDrawingNormal()</slot>
+    <slot>setRoadDrawingByPriority()</slot>
+    <slot>setRoadDrawingByUsage()</slot>
+    <slot>copyWorldCenter()</slot>
+    <slot>removeFromRoutePlan()</slot>
+    <slot>clearSearchResult()</slot>
+    <slot>jumpToPoi(QListWidgetItem*)</slot>
+    <slot>setDrawManeuverOnMapFlag(bool)</slot>
+    <slot>setPoiShow(bool)</slot>
+    <slot>loadFavorites()</slot>
+    <slot>openInOpenStreetMap()</slot>
+    <slot>setSearchedSegmentsShow(bool)</slot>
+    <slot>getCentralPoi()</slot>
+    <slot>jumpToRoutePlanItem(QListWidgetItem*)</slot>
+    <slot>setSelectCameraState(bool)</slot>
+    <slot>setRoadDetailLayer()</slot>
+    <slot>setRoadMiddleLayer()</slot>
+    <slot>setRoadSuperlinkLayer()</slot>
+    <slot>setCarAngle(int)</slot>
+    <slot>filterCamera(int)</slot>
+    <slot>displayReportCamera(bool)</slot>
+    <slot>elevationUp()</slot>
+    <slot>elevationDown()</slot>
+    <slot>selectDSegment()</slot>
+    <slot>setDrawManeuverPosOnMapFlag(bool)</slot>
+    <slot>keepNorthUp(bool)</slot>
+    <slot>setRouteResultsShow(bool)</slot>
+    <slot>openInSosoMap()</slot>
+    <slot>copyViewport()</slot>
+    <slot>displayTrafficLight(bool)</slot>
+    <slot>useSouthernDialect(bool)</slot>
+    <slot>appendDestinationOrientation(bool)</slot>
+    <slot>addExpectedWayPoint()</slot>
+    <slot>setRoadDrawingByLayer()</slot>
+    <slot>showNdsChangeArea(int)</slot>
+    <slot>showNdsChangeBorder(int)</slot>
+    <slot>filterNdsChangeListByLevel(QString)</slot>
+    <slot>setAvoidedSegmentsShow(bool)</slot>
+    <slot>openInBaiduMap()</slot>
+    <slot>setRoadDrawingBySlopeSource()</slot>
+    <slot>setRoadDrawingByTi()</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>routePlanDevTestBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>QIteWindowClass</receiver>
+   <slot>onRoutePlanDevTestBtnClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>77</x>
+     <y>123</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>133</x>
+     <y>-9</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onRoutePlanDevTestBtnClicked()</slot>
+ </slots>
+</ui>

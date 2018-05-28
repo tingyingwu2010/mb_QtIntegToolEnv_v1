@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nds_qite", "nds_qite.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BB57A617-9D22-428A-97A0-27A903465CB6} = {BB57A617-9D22-428A-97A0-27A903465CB6}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NaviApi", "..\..\navi_api\NaviApi\src\NaviApi.vcxproj", "{BB57A617-9D22-428A-97A0-27A903465CB6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{68183719-9F2E-4358-A413-8ED62028899E} = {68183719-9F2E-4358-A413-8ED62028899E}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RP", "..\..\navi_api\Function\RP\rp.vcxproj", "{68183719-9F2E-4358-A413-8ED62028899E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Win32.Build.0 = Debug|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.ActiveCfg = Release|Win32
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.Build.0 = Release|Win32
+		{BB57A617-9D22-428A-97A0-27A903465CB6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BB57A617-9D22-428A-97A0-27A903465CB6}.Debug|Win32.Build.0 = Debug|Win32
+		{BB57A617-9D22-428A-97A0-27A903465CB6}.Release|Win32.ActiveCfg = Release|Win32
+		{BB57A617-9D22-428A-97A0-27A903465CB6}.Release|Win32.Build.0 = Release|Win32
+		{68183719-9F2E-4358-A413-8ED62028899E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{68183719-9F2E-4358-A413-8ED62028899E}.Debug|Win32.Build.0 = Debug|Win32
+		{68183719-9F2E-4358-A413-8ED62028899E}.Release|Win32.ActiveCfg = Release|Win32
+		{68183719-9F2E-4358-A413-8ED62028899E}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
