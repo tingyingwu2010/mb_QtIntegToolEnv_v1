@@ -62,7 +62,10 @@ namespace nsNaviSess
 		QExplicitlySharedDataPointer<CNaviSessAcquireBase> extractRoute()
 		{
 			auto& sess = m_spContext->m_sess;
-			//sess.extractRouteResult();
+			if (! sess.extractRouteResult())
+			{
+				qWarning() << "extrack route failed";
+			}
 			return MakeQExplicitSharedAcq<CExtractedRouteResultAcq>();
 		}
 
