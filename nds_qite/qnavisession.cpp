@@ -44,12 +44,16 @@ namespace nsNaviSess
 	{
 	public:
 		virtual void notify() final
-		{}
+		{
+			auto ins = QNaviSession::instance();
+			ins->onAcquireExtractedRouteResult();
+		}
 	};
 
 	class CExtractRouteReq : public CNaviSessRequestBase
 	{
 	public:
+		CExtractRouteReq(size_t sid) : CNaviSessRequestBase(sid) {}
 		virtual QExplicitlySharedDataPointer<CNaviSessAcquireBase> getSharedAquirement() final
 		{
 			return extractRoute();
@@ -57,10 +61,15 @@ namespace nsNaviSess
 	private:
 		QExplicitlySharedDataPointer<CNaviSessAcquireBase> extractRoute()
 		{
+			auto& sess = m_spContext->m_sess;
+			//sess.extractRouteResult();
 			return MakeQExplicitSharedAcq<CExtractedRouteResultAcq>();
 		}
+
+		QExplicitlySharedDataPointer<CContext> m_spContext;
 	};
 
+	static QExplicitlySharedDataPointer<nsNaviSess::CContext> spCurCtx;
 }
 
 class CNaviSessCalcResultAcq : public CNaviSessAcquireBase
@@ -71,7 +80,8 @@ public:
 	virtual void notify() final
 	{
 		auto ins = QNaviSession::instance();
-		ins->onAquireRouteCalcResult(m_spContext->m_sid);
+
+		ins->onAcquireRouteCalcResult(m_spContext->m_sid);
 	}
 	QExplicitlySharedDataPointer<nsNaviSess::CContext> m_spContext;
 };
@@ -87,8 +97,8 @@ public:
 private:
 	QExplicitlySharedDataPointer<CNaviSessAcquireBase> calcRoute()
 	{
-		auto pCtx = nsNaviSess::MakeContext(sessid);
-		CNdsNaviSession& sess = pCtx->m_sess;
+		nsNaviSess::spCurCtx = nsNaviSess::MakeContext(sessid);
+		CNdsNaviSession& sess = nsNaviSess::spCurCtx->m_sess;
 
 		if (sess.Initialize())
 		{
@@ -104,7 +114,7 @@ private:
 			}
 		}
 
-		return MakeQExplicitSharedAcq<CNaviSessCalcResultAcq>(pCtx);
+		return MakeQExplicitSharedAcq<CNaviSessCalcResultAcq>(nsNaviSess::spCurCtx);
 	}
 };
 
@@ -133,6 +143,7 @@ struct QNaviSession::CPrivate
 		if (pThread) delete pThread;
 	}
 
+	// retval : isErr, isBusy, isUpdated
 	std::tuple<bool, bool, bool> update(nsNaviSess::SessState_E s)
 	{
 		QMutexLocker locker(&CPrivate::mtx);
@@ -187,6 +198,7 @@ struct QNaviSession::CPrivate
 		case nsNaviSess::SS_ACQ_EXTRACT_ROUTE_RESULT:
 			if (nsNaviSess::SS_REQ_EXTRACT_ROUTE_RESULT == mSessState)
 			{
+				mSessState = nsNaviSess::SS_ACQ_EXTRACT_ROUTE_RESULT;
 				isUpdated = true;
 			}
 			else
@@ -245,8 +257,11 @@ struct QNaviSession::CPrivate
 			std::tie(isErr, isBusy, isUpdated) = update(nsNaviSess::SS_REQ_EXTRACT_ROUTE_RESULT);
 			if (isUpdated)
 			{
-				pThread->sendReq(MakeQExplicitSharedReq<nsNaviSess::CExtractRouteReq>());
+				pThread->sendReq(MakeQExplicitSharedReq<nsNaviSess::CExtractRouteReq>(sessid));
 			}
+			break;
+		case nsNaviSess::SS_ACQ_EXTRACT_ROUTE_RESULT:
+			std::tie(isErr, isBusy, isUpdated) = update(nsNaviSess::SS_DONE);
 			break;
 		default:
 			isErr = true;
@@ -278,12 +293,32 @@ QNaviSession* QNaviSession::instance()
 	return pSess;
 }
 
-void QNaviSession::onAquireRouteCalcResult(size_t sid)
+void QNaviSession::onAcquireRouteCalcResult(const size_t sid)
 {
-	bool isErr, isUpdated, isBusy;
-	std::tie(isErr, isBusy, isUpdated) = mp->update(nsNaviSess::SS_ACQ_ROUTE_RESULT);
+	if (nsNaviSess::spCurCtx && sid == nsNaviSess::spCurCtx->m_sid)
+	{
+		bool isErr, isUpdated, isBusy;
+		std::tie(isErr, isBusy, isUpdated) = mp->update(nsNaviSess::SS_ACQ_ROUTE_RESULT);
+		qDebug() << "SID[" << sid << "] : get the route result";
+	}
+	else
+	{
+		qWarning() << "session id is not consistant!";
+	}
+}
 
-	qDebug() << "SID[" << sid << "] : get the route result";
+void QNaviSession::onAcquireExtractedRouteResult()
+{
+	if (nsNaviSess::spCurCtx)
+	{
+		bool isErr, isUpdated, isBusy;
+		std::tie(isErr, isBusy, isUpdated) = mp->update(nsNaviSess::SS_ACQ_EXTRACT_ROUTE_RESULT);
+		qDebug() << "SID[" << nsNaviSess::spCurCtx->m_sid << "] : get the extracted route result";
+	}
+	else
+	{
+		qWarning() << "session id is not consistant!";
+	}
 }
 
 std::tuple<bool, bool, bool> QNaviSession::test()

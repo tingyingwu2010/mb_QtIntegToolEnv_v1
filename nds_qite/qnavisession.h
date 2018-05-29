@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <tuple>
+
 class QNaviSession : public QObject
 {
 	Q_OBJECT
@@ -14,7 +15,8 @@ public:
 	static QNaviSession* instance();
 	std::tuple<bool, bool, bool> test();
 	std::tuple<bool, bool, bool> doneTest();
-	void onAquireRouteCalcResult(size_t sid);
+	void onAcquireRouteCalcResult(const size_t sid);
+	void onAcquireExtractedRouteResult();
 private:
 	CPrivate* mp;
 };
