@@ -249,6 +249,7 @@ struct QNaviSession::CPrivate
 			}
 			break;
 		default:
+			isErr = true;
 			qDebug() << __FUNCTIONW__ << "() unexpected session state";
 			break;
 		}
@@ -285,7 +286,12 @@ void QNaviSession::onAquireRouteCalcResult(size_t sid)
 	qDebug() << "SID[" << sid << "] : get the route result";
 }
 
-void QNaviSession::test()
+std::tuple<bool, bool, bool> QNaviSession::test()
 {
-	mp->stepOne();
+	return mp->stepOne();
+}
+
+std::tuple<bool, bool, bool> QNaviSession::doneTest()
+{
+	return mp->update(nsNaviSess::SS_DONE);
 }

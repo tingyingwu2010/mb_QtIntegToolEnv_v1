@@ -32,7 +32,12 @@ DataCenter::~DataCenter()
 
 }
 
-void DataCenter::test()
+std::tuple<bool, bool, bool> DataCenter::test()
 {
-	QNaviSession::instance()->test();
+	return QNaviSession::instance()->test();
+}
+
+std::tuple<bool, bool, bool> DataCenter::doneTest()
+{
+	return QNaviSession::instance()->doneTest();
 }

@@ -53,7 +53,8 @@ public:
 	void setOptions(const QIteOptions* options);
 	void applyOptions(void);
 
-	void test();
+	std::tuple<bool, bool, bool> test();
+	std::tuple<bool, bool, bool> doneTest();
 
 private:
 	QIteOptions m_options;

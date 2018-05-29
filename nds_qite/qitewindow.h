@@ -23,6 +23,7 @@ private:
 
 public slots:
 	void onRoutePlanDevTestBtnClicked();
+	void onDevTestDoneBtnClicked();
 
 protected:
 	virtual bool event(QEvent * e);

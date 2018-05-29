@@ -65,6 +65,30 @@ void QIteWindow::onRoutePlanDevTestBtnClicked()
 	msg.setText("HelloWord!");
 	msg.exec();
 #endif
+	bool isErr, isBusy;
 	DataCenter* dc = DataCenter::instance();
-	dc->test();
+	std::tie(isErr, isBusy, std::ignore) = dc->test();
+	if (isErr)
+	{
+		QMessageBox::warning(this, "warning", "unexpect behavior!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+	}
+	else if (isBusy)
+	{
+		QMessageBox::information(NULL, "Title", "worker is busy!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+	}
+}
+
+void QIteWindow::onDevTestDoneBtnClicked()
+{
+	bool isErr, isBusy;
+	DataCenter* dc = DataCenter::instance();
+	std::tie(isErr, isBusy, std::ignore) = dc->doneTest();
+	if (isErr)
+	{
+		QMessageBox::warning(this, "warning", "unexpect behavior!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+	}
+	else if (isBusy)
+	{
+		QMessageBox::information(NULL, "Title", "worker is busy!", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+	}
 }

@@ -69,6 +69,19 @@
               <string>test</string>
              </property>
             </widget>
+            <widget class="QPushButton" name="testDoneButton">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>40</y>
+               <width>75</width>
+               <height>23</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>done</string>
+             </property>
+            </widget>
            </widget>
           </widget>
          </item>
@@ -212,8 +225,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>testDoneButton</sender>
+   <signal>clicked()</signal>
+   <receiver>QIteWindowClass</receiver>
+   <slot>onDevTestDoneBtnClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>59</x>
+     <y>151</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>182</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onRoutePlanDevTestBtnClicked()</slot>
+  <slot>onDevTestDoneBtnClicked()</slot>
  </slots>
 </ui>
