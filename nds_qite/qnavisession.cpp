@@ -63,12 +63,16 @@ namespace nsNaviSess
 	private:
 		QExplicitlySharedDataPointer<CNaviSessAcquireBase> extractRoute()
 		{
-			auto pResult = nsNaviSess::spCurCtx->m_sess.getRouteResult();
-			const size_t linkNum = pResult->getLinkNum();
-			qWarning() << "sess[" << sessid << "]single section RSlink number is " << linkNum << ".";
+			auto spResult = nsNaviSess::spCurCtx->m_sess.getRouteResult();
+			const size_t linkNum = spResult->getLinkNum();
+			qDebug() << "SID[" << sessid << "]single section RSlink number is " << linkNum << ".";
 			for (size_t i = 0; i < linkNum; i++)
 			{
-
+				auto spLink = spResult->getLinkAt(i);
+				int x1, y1, x2, y2;
+				spLink->getStartPos(x1,y1);
+				spLink->getEndPos(x2, y2);
+				qDebug() << "#" << i << " " << x1 << "," << y1 << "-" << x2 << "," << y2;
 			}
 
 			return MakeQExplicitSharedAcq<CExtractedRouteResultAcq>();
