@@ -35,6 +35,8 @@ namespace nsNaviSess
 		const size_t m_sid;
 	};
 
+	static QExplicitlySharedDataPointer<nsNaviSess::CContext> spCurCtx;
+
 	inline QExplicitlySharedDataPointer<CContext> MakeContext(size_t sid)
 	{
 		return QExplicitlySharedDataPointer<CContext>(new CContext(sid));
@@ -61,18 +63,19 @@ namespace nsNaviSess
 	private:
 		QExplicitlySharedDataPointer<CNaviSessAcquireBase> extractRoute()
 		{
-			auto& sess = m_spContext->m_sess;
-			if (! sess.extractRouteResult())
+			auto& sess = nsNaviSess::spCurCtx->m_sess;
+			const size_t linkNum = sess.getSingleRouteLinkNum();
+			qWarning() << "sess[" << sessid << "]single section RSlink number is " << linkNum << ".";
+			for (size_t i = 0; i < linkNum; i++)
 			{
-				qWarning() << "extrack route failed";
+
 			}
+
 			return MakeQExplicitSharedAcq<CExtractedRouteResultAcq>();
 		}
 
-		QExplicitlySharedDataPointer<CContext> m_spContext;
+		//QExplicitlySharedDataPointer<CContext> m_spContext;
 	};
-
-	static QExplicitlySharedDataPointer<nsNaviSess::CContext> spCurCtx;
 }
 
 class CNaviSessCalcResultAcq : public CNaviSessAcquireBase
