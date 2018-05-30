@@ -63,8 +63,8 @@ namespace nsNaviSess
 	private:
 		QExplicitlySharedDataPointer<CNaviSessAcquireBase> extractRoute()
 		{
-			auto& sess = nsNaviSess::spCurCtx->m_sess;
-			const size_t linkNum = sess.getSingleRouteLinkNum();
+			auto pResult = nsNaviSess::spCurCtx->m_sess.getRouteResult();
+			const size_t linkNum = pResult->getLinkNum();
 			qWarning() << "sess[" << sessid << "]single section RSlink number is " << linkNum << ".";
 			for (size_t i = 0; i < linkNum; i++)
 			{
