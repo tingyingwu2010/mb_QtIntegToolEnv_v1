@@ -10,6 +10,8 @@ QMapWidget::QMapWidget(QWidget *parent)
 	view->setScene(scene);
 	view->setViewport(this);
 
+	scene->addItem(new nsNaviMapGraphics::QRouteLink(10, 10, 100, 100));
+
 	NaviMap* map = NaviCoreEnv::instance()->map();
 	
 }

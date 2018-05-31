@@ -94,6 +94,20 @@ public:
 	int height;
 };
 
+namespace nsNaviMapGraphics
+{
+	class QRouteLink : public QGraphicsLineItem
+	{
+	public:
+		QRouteLink(int x1, int y1, int x2, int y2) : m_line(x1, y1, x2, y2) {}
+		void paint(QPainter *painter,
+			const QStyleOptionGraphicsItem *option, QWidget *widget);
+	private:
+		QLine m_line;
+	};
+
+
+}
 class NaviMap
 {
 public:

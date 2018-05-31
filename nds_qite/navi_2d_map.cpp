@@ -4,25 +4,26 @@
 
 static void _GDI_drawRoads(GDI* gdi, const Camera2D* camera, RoadDrawingStyle style, int32 layer);
 
-namespace nsNaviMapGraphics
-{
-	class QRouteLink : public QGraphicsLineItem
-	{
-	public:
-		QRouteLink(QPair<int, int> pos = qMakePair(-1, -1)) : m_pos(pos) {}
-		void paint(QPainter *painter,
-			const QStyleOptionGraphicsItem *option, QWidget *widget);
-	
-	private:
-		QPair<int, int> m_pos;
-	};
-
-
-}
-
 void nsNaviMapGraphics::QRouteLink::paint(QPainter *painter,
 	const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+	painter->setPen(QPen(Qt::black));
+	painter->setBrush(QBrush(Qt::red));
+
+	if (!m_line.isNull())
+	{
+		painter->drawLine(m_line);
+	}
+}
+
+
+static void _GDI_drawRoutes(GDI* gdi)
+{
+	if (gdi && gdi->mScene->items().empty())
+	{
+		gdi->mScene->addItem(new nsNaviMapGraphics::QRouteLink(10, 10, 100, 100));
+	}
+	
 }
 
 Navi2DMap::Navi2DMap()
@@ -59,7 +60,7 @@ void Navi2DMap::drawOnSurface(const NaviMapDrawOptions* options)
 
 	if (true)
 	{
-
+		_GDI_drawRoutes(m_gdi);
 	}
 }
 
