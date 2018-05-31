@@ -42,6 +42,52 @@ namespace nsNaviSess
 		return QExplicitlySharedDataPointer<CContext>(new CContext(sid));
 	}
 
+	class CCalcResultAcq : public CNaviSessAcquireBase
+	{
+	public:
+		CCalcResultAcq(QExplicitlySharedDataPointer<nsNaviSess::CContext> spCtx)
+			: m_spContext(spCtx) {}
+		virtual void notify() final
+		{
+			auto ins = QNaviSession::instance();
+
+			ins->onAcquireRouteCalcResult(m_spContext->m_sid);
+		}
+		QExplicitlySharedDataPointer<nsNaviSess::CContext> m_spContext;
+	};
+
+	class CCalcRouteReq : public CNaviSessRequestBase
+	{
+	public:
+		CCalcRouteReq(size_t sid) : CCalcRouteReq(sid) {}
+		virtual QExplicitlySharedDataPointer<CNaviSessAcquireBase> getSharedAquirement() final
+		{
+			return calcRoute();
+		}
+	private:
+		QExplicitlySharedDataPointer<CNaviSessAcquireBase> calcRoute()
+		{
+			nsNaviSess::spCurCtx = nsNaviSess::MakeContext(sessid);
+			CNdsNaviSession& sess = nsNaviSess::spCurCtx->m_sess;
+
+			if (sess.Initialize())
+			{
+				if (sess.calcRoute(
+					1389087203, 476456031, // start pos never change
+					//1388266368, 475637856	// only connective level
+					1388572928, 476910336	// up level
+					)){
+					qDebug() << "SID[" << sessid << "] route OK";
+				}
+				else{
+					qDebug() << "SID[" << sessid << "route failure!";
+				}
+			}
+
+			return MakeQExplicitSharedAcq<CCalcResultAcq>(nsNaviSess::spCurCtx);
+		}
+	};
+
 	class CExtractedRouteResultAcq : public CNaviSessAcquireBase
 	{
 	public:
@@ -81,52 +127,6 @@ namespace nsNaviSess
 		//QExplicitlySharedDataPointer<CContext> m_spContext;
 	};
 }
-
-class CNaviSessCalcResultAcq : public CNaviSessAcquireBase
-{
-public:
-	CNaviSessCalcResultAcq(QExplicitlySharedDataPointer<nsNaviSess::CContext> spCtx)
-		: m_spContext(spCtx) {}
-	virtual void notify() final
-	{
-		auto ins = QNaviSession::instance();
-
-		ins->onAcquireRouteCalcResult(m_spContext->m_sid);
-	}
-	QExplicitlySharedDataPointer<nsNaviSess::CContext> m_spContext;
-};
-
-class CNaviSessCalcRouteReq : public CNaviSessRequestBase
-{
-public:
-	CNaviSessCalcRouteReq(size_t sid) : CNaviSessRequestBase(sid) {}
-	virtual QExplicitlySharedDataPointer<CNaviSessAcquireBase> getSharedAquirement() final
-	{
-		return calcRoute();
-	}
-private:
-	QExplicitlySharedDataPointer<CNaviSessAcquireBase> calcRoute()
-	{
-		nsNaviSess::spCurCtx = nsNaviSess::MakeContext(sessid);
-		CNdsNaviSession& sess = nsNaviSess::spCurCtx->m_sess;
-
-		if (sess.Initialize())
-		{
-			if (sess.calcRoute(
-				1389087203, 476456031, // start pos never change
-				//1388266368, 475637856	// only connective level
-				1388572928, 476910336	// up level
-				)){
-				qDebug() << "SID[" << sessid << "] route OK";
-			}
-			else{
-				qDebug() << "SID[" << sessid << "route failure!";
-			}
-		}
-
-		return MakeQExplicitSharedAcq<CNaviSessCalcResultAcq>(nsNaviSess::spCurCtx);
-	}
-};
 
 struct QNaviSession::CPrivate
 {
@@ -257,7 +257,7 @@ struct QNaviSession::CPrivate
 			std::tie(isErr, isBusy, isUpdated) = update(nsNaviSess::SS_REQ_CALC_ROUTE);
 			if (isUpdated)
 			{
-				pThread->sendReq(MakeQExplicitSharedReq<CNaviSessCalcRouteReq>(++sessid));
+				pThread->sendReq(MakeQExplicitSharedReq<nsNaviSess::CCalcRouteReq>(++sessid));
 			}
 			break;
 		case nsNaviSess::SS_REQ_CALC_ROUTE:
