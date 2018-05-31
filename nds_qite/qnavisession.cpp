@@ -59,7 +59,7 @@ namespace nsNaviSess
 	class CCalcRouteReq : public CNaviSessRequestBase
 	{
 	public:
-		CCalcRouteReq(size_t sid) : CCalcRouteReq(sid) {}
+		CCalcRouteReq(size_t sid = 0) : CNaviSessRequestBase(sid) {}
 		virtual QExplicitlySharedDataPointer<CNaviSessAcquireBase> getSharedAquirement() final
 		{
 			return calcRoute();
@@ -101,7 +101,7 @@ namespace nsNaviSess
 	class CExtractRouteReq : public CNaviSessRequestBase
 	{
 	public:
-		CExtractRouteReq(size_t sid) : CNaviSessRequestBase(sid) {}
+		CExtractRouteReq(size_t sid = 0) : CNaviSessRequestBase(sid) {}
 		virtual QExplicitlySharedDataPointer<CNaviSessAcquireBase> getSharedAquirement() final
 		{
 			return extractRoute();

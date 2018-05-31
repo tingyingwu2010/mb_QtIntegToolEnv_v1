@@ -48,6 +48,7 @@ public:
 
 	virtual float pixel2WorldUnit(float pixel);
 #endif
+	void setGraphicScene(QGraphicsScene*); /// added by wxl on 20180531
 private:
 	GDI* m_gdi;
 //	Handle m_surf;

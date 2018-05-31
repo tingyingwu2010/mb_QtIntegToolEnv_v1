@@ -12,7 +12,9 @@
 #define int32 int32_t
 
 #if 1 // should be in the other file
-struct GDI{};
+struct GDI{
+	QGraphicsScene* mScene;
+};
 typedef struct GDI GDI;
 
 struct _Camera2D{};

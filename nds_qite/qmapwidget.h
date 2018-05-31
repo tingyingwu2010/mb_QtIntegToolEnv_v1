@@ -19,6 +19,8 @@ protected:
 private:
 	Ui::QMapWidget ui;
 
+	QGraphicsScene *scene;
+	QGraphicsView *view;
 private:
 	NaviMapDrawOptions m_options;	// 地图绘制选项
 

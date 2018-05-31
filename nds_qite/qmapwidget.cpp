@@ -5,11 +5,18 @@ QMapWidget::QMapWidget(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
+	scene = new QGraphicsScene;
+	view = new QGraphicsView;
+	view->setScene(scene);
+	view->setViewport(this);
+
+	NaviMap* map = NaviCoreEnv::instance()->map();
+	
 }
 
 QMapWidget::~QMapWidget()
 {
-
+	
 }
 
 void QMapWidget::paintEvent(QPaintEvent *event)
