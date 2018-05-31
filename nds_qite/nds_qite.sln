@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nds_qite", "nds_qite.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
-	ProjectSection(ProjectDependencies) = postProject
-		{BB57A617-9D22-428A-97A0-27A903465CB6} = {BB57A617-9D22-428A-97A0-27A903465CB6}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NaviApi", "..\..\navi_api\NaviApi\src\NaviApi.vcxproj", "{BB57A617-9D22-428A-97A0-27A903465CB6}"
 	ProjectSection(ProjectDependencies) = postProject

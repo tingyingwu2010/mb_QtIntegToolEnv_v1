@@ -3,6 +3,7 @@
 
 #include "navi_core.h"
 #include "ui_qmapwidget.h"
+#include "qnavisession.h"
 
 class QMapWidget : public QWidget
 {
@@ -24,7 +25,8 @@ private:
 private:
 	NaviMapDrawOptions m_options;	// 地图绘制选项
 
-
+public slots:
+void onUpdateRoute(NaviSessRouteResult_ptr);
 };
 
 #endif // QMAPWIDGET_H

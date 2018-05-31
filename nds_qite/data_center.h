@@ -48,6 +48,7 @@ public:
 	===================================================================*/
 signals:
 	void optionsChanged(const QIteOptions*);
+
 public:
 	const QIteOptions* getOptions(void) { return &m_options; }
 	void setOptions(const QIteOptions* options);

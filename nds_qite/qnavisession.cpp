@@ -109,17 +109,6 @@ namespace nsNaviSess
 	private:
 		QExplicitlySharedDataPointer<CNaviSessAcquireBase> extractRoute()
 		{
-			auto spResult = nsNaviSess::spCurCtx->m_sess.getRouteResult();
-			const size_t linkNum = spResult->getLinkNum();
-			qDebug() << "SID[" << sessid << "]single section RSlink number is " << linkNum << ".";
-			for (size_t i = 0; i < linkNum; i++)
-			{
-				auto spLink = spResult->getLinkAt(i);
-				int x1, y1, x2, y2;
-				spLink->getStartPos(x1,y1);
-				spLink->getEndPos(x2, y2);
-				qDebug() << "#" << i << " " << x1 << "," << y1 << "-" << x2 << "," << y2;
-			}
 
 			return MakeQExplicitSharedAcq<CExtractedRouteResultAcq>();
 		}
@@ -323,7 +312,33 @@ void QNaviSession::onAcquireExtractedRouteResult()
 	{
 		bool isErr, isUpdated, isBusy;
 		std::tie(isErr, isBusy, isUpdated) = mp->update(nsNaviSess::SS_ACQ_EXTRACT_ROUTE_RESULT);
-		qDebug() << "SID[" << nsNaviSess::spCurCtx->m_sid << "] : get the extracted route result";
+		if (isUpdated)
+		{
+			auto spResult = nsNaviSess::spCurCtx->m_sess.getRouteResult();
+			const size_t linkNum = spResult->getLinkNum();
+			qDebug() << "SID[" << nsNaviSess::spCurCtx->m_sid << "]single section RSlink number is " << linkNum << ".";
+			auto spRetResult = std::make_shared<nsNaviSess::CRouteResult>();
+			for (size_t i = 0; i < linkNum; i++)
+			{
+				auto spLink = spResult->getLinkAt(i);
+				int x1, y1, x2, y2;
+				spLink->getStartPos(x1, y1);
+				spLink->getEndPos(x2, y2);
+
+				nsNaviSess::CShapePoint p1(x1, y1), p2(x2, y2);
+				nsNaviSess::CResultLink RetLink;
+				RetLink.mPosVec.emplace_back(std::move(p1));
+				RetLink.mPosVec.emplace_back(std::move(p2));
+				spRetResult->mLinkVec.emplace_back(RetLink);
+				qDebug() << "#" << i << " " << x1 << "," << y1 << "-" << x2 << "," << y2;
+			}
+			emit routeResultUpdated(spRetResult);
+			qDebug() << "SID[" << nsNaviSess::spCurCtx->m_sid << "] : on acqired the extracted route result";
+		}
+		else
+		{
+			qWarning() << "SID[" << nsNaviSess::spCurCtx->m_sid << "] : abnormally on acqired the extracted route result";
+		}
 	}
 	else
 	{
