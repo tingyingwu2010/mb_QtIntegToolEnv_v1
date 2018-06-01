@@ -1,4 +1,4 @@
-#include "stdafx_qite.h"
+ï»¿#include "stdafx_qite.h"
 #include "qmapwidget.h"
 #include "qnavisession.h"
 
@@ -7,29 +7,33 @@ namespace nsNaviMapGraphics
 	class QRouteLink : public QGraphicsLineItem
 	{
 	public:
-		QRouteLink(int x1, int y1, int x2, int y2) : m_line(x1, y1, x2, y2) {}
+		QRouteLink(int x1, int y1, int x2, int y2) : QGraphicsLineItem(x1, y1, x2, y2) {
+			setFlags(ItemIsSelectable);
+		}
 		void paint(QPainter *painter,
 			const QStyleOptionGraphicsItem *option, QWidget *widget);
-	private:
-		QLine m_line;
+		void â€‹mousePressEvent(QGraphicsSceneMouseEvent * event);
 	};
+}
+
+void nsNaviMapGraphics::QRouteLink::â€‹mousePressEvent(QGraphicsSceneMouseEvent * event)
+{
+	event->accept();
 }
 
 void nsNaviMapGraphics::QRouteLink::paint(QPainter *painter,
 	const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-	QPen pen(Qt::black);
+	QPen newPen(pen());
+	qreal penWidth = 4.0 / option->levelOfDetailFromTransform(painter->worldTransform());
+	newPen.setWidth(penWidth);
 	if (option->state & QStyle::State_Selected) {
-		pen.setStyle(Qt::DotLine);
-		pen.setWidth(2);
+		newPen.setStyle(Qt::DotLine);
+		newPen.setWidth(penWidth * 2);
 	}
-	painter->setPen(pen);
-	painter->setBrush(QBrush(Qt::red));
-
-	if (!m_line.isNull())
-	{
-		painter->drawLine(m_line);
-	}
+	setPen(newPen);
+	//painter->drawLine(line());
+	return QGraphicsLineItem::paint(painter, option, widget);
 }
 
 #define VIEW_CENTER viewport()->rect().center()
@@ -44,17 +48,16 @@ QMapWidget::QMapWidget(QWidget *parent)
 , m_bMouseTranslate(false)
 {
 	ui.setupUi(this);
-	scene = new QGraphicsScene(this);
-	setScene(scene);
+	setScene(new QGraphicsScene(this));
 
 	qRegisterMetaType<NaviSessRouteResult_ptr>("NaviSessRouteResult_ptr");
-	//scene->addItem(new nsNaviMapGraphics::QRouteLink(10, 10, 100, 100));
+
 	connect(QNaviSession::instance(), SIGNAL(routeResultUpdated(NaviSessRouteResult_ptr)),
 		this, SLOT(onUpdateRoute(NaviSessRouteResult_ptr)));
 
 	NaviMap* map = NaviCoreEnv::instance()->map();
 	
-	// È¥µô¹ö¶¯Ìõ
+	// å»æ‰æ»šåŠ¨æ¡
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -69,23 +72,23 @@ QMapWidget::~QMapWidget()
 {
 	
 }
-// ·Å´ó
+// æ”¾å¤§
 void QMapWidget::zoomIn()
 {
 	zoom(1 + m_zoomDelta);
 }
 
-// ËõĞ¡
+// ç¼©å°
 void QMapWidget::zoomOut()
 {
 	zoom(1 - m_zoomDelta);
 }
-// Ëõ·Å - scaleFactor£ºËõ·ÅµÄ±ÈÀıÒò×Ó
+// ç¼©æ”¾ - scaleFactorï¼šç¼©æ”¾çš„æ¯”ä¾‹å› å­
 void QMapWidget::zoom(float scaleFactor)
 {
-	// ·ÀÖ¹¹ıĞ¡»ò¹ı´ó
+	// é˜²æ­¢è¿‡å°æˆ–è¿‡å¤§
 	qreal factor = transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
-	if (factor < 0.07 || factor > 100)
+	if (factor < 0.0007 || factor > 100)
 		return;
 
 	scale(scaleFactor, scaleFactor);
@@ -94,26 +97,30 @@ void QMapWidget::zoom(float scaleFactor)
 
 void QMapWidget::wheelEvent(QWheelEvent *event)
 {
-	// ¹öÂÖµÄ¹ö¶¯Á¿
+	// æ»šè½®çš„æ»šåŠ¨é‡
 	QPoint scrollAmount = event->angleDelta();
-	// ÕıÖµ±íÊ¾¹öÂÖÔ¶ÀëÊ¹ÓÃÕß£¨·Å´ó£©£¬¸ºÖµ±íÊ¾³¯ÏòÊ¹ÓÃÕß£¨ËõĞ¡£©
+	// æ­£å€¼è¡¨ç¤ºæ»šè½®è¿œç¦»ä½¿ç”¨è€…ï¼ˆæ”¾å¤§ï¼‰ï¼Œè´Ÿå€¼è¡¨ç¤ºæœå‘ä½¿ç”¨è€…ï¼ˆç¼©å°ï¼‰
 	scrollAmount.y() > 0 ? zoomIn() : zoomOut();
 }
+#if 1
 
 void QMapWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
 	qDebug() << "dbl_clk - x : " << e->x() << ", y : " << e->y();
-}
 
+	QGraphicsView::mouseDoubleClickEvent(e);
+}
 void QMapWidget::mousePressEvent(QMouseEvent *event)
 {
 	qDebug() << "dwn - x : " << event->x() << ", y : " << event->y();
-	// µ±¹â±êµ×ÏÂÃ»ÓĞ item Ê±£¬²ÅÄÜÒÆ¶¯
-	QPointF point = mapToScene(event->pos());
+	// å½“å…‰æ ‡åº•ä¸‹æ²¡æœ‰ item æ—¶ï¼Œæ‰èƒ½ç§»åŠ¨
+	QPointF point = mapToScene(event->pos()); 
 	m_bMouseTranslate = true;
 	m_lastMousePos = event->pos();
-}
 
+	QGraphicsView::mousePressEvent(event);
+}
+#endif
 void QMapWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	qDebug() << "mov - x : " << event->x() << ", y : " << event->y();
@@ -134,19 +141,19 @@ void QMapWidget::mouseReleaseEvent(QMouseEvent *event)
 	QGraphicsView::mouseReleaseEvent(event);
 }
 
-// Æ½ÒÆ
+// å¹³ç§»
 void QMapWidget::translate(QPointF delta)
 {
-	// ¸ù¾İµ±Ç° zoom Ëõ·ÅÆ½ÒÆÊı
+	// æ ¹æ®å½“å‰ zoom ç¼©æ”¾å¹³ç§»æ•°
 	delta *= m_scale;
 	delta *= m_translateSpeed;
 
-	// view ¸ù¾İÊó±êÏÂµÄµã×÷ÎªÃªµãÀ´¶¨Î» scene
+	// view æ ¹æ®é¼ æ ‡ä¸‹çš„ç‚¹ä½œä¸ºé”šç‚¹æ¥å®šä½ scene
 	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 	QPoint newCenter(VIEW_WIDTH / 2 - delta.x(), VIEW_HEIGHT / 2 - delta.y());
 	centerOn(mapToScene(newCenter));
 
-	// scene ÔÚ view µÄÖĞĞÄµã×÷ÎªÃªµã
+	// scene åœ¨ view çš„ä¸­å¿ƒç‚¹ä½œä¸ºé”šç‚¹
 	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 }
 
@@ -154,10 +161,10 @@ void QMapWidget::onUpdateRoute(NaviSessRouteResult_ptr spResult)
 {
 	qDebug() << "map widget invoke onUpdateRoute() link number is" << spResult->mLinkVec.size() << ".";
 
-	while (!scene->items().empty())
+	while (!scene()->items().empty())
 	{
-		delete dynamic_cast<nsNaviMapGraphics::QRouteLink*>(scene->items().last());
-		scene->items().removeLast();
+		delete dynamic_cast<nsNaviMapGraphics::QRouteLink*>(scene()->items().last());
+		scene()->items().removeLast();
 	}
 
 	foreach(auto &rLnk, spResult->mLinkVec)
@@ -169,7 +176,12 @@ void QMapWidget::onUpdateRoute(NaviSessRouteResult_ptr spResult)
 			auto x2 = rLnk.mPosVec[1].x - spResult->mLinkVec[0].mPosVec[0].x;
 			auto y2 = rLnk.mPosVec[1].y - spResult->mLinkVec[0].mPosVec[0].y;
 			auto pRouteLink = new nsNaviMapGraphics::QRouteLink(x1, y1,	x2,	y2);
-			scene->addItem(pRouteLink);
+			scene()->addItem(pRouteLink);
 		}
+	}
+
+	if (!scene()->items().empty())
+	{
+		//scene()->setSceneRect(scene()->itemsBoundingRect());
 	}
 }
