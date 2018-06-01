@@ -32,14 +32,20 @@ void nsNaviMapGraphics::QRouteLink::paint(QPainter *painter,
 	}
 }
 
+#define VIEW_CENTER viewport()->rect().center()
+#define VIEW_WIDTH  viewport()->rect().width()
+#define VIEW_HEIGHT viewport()->rect().height()
+
 QMapWidget::QMapWidget(QWidget *parent)
-	: QWidget(parent)
+: QGraphicsView(parent)
+, m_scale(1.0)
+, m_zoomDelta(0.1)
+, m_translateSpeed(1.0)
+, m_bMouseTranslate(false)
 {
 	ui.setupUi(this);
-	scene = new QGraphicsScene;
-	view = new QGraphicsView;
-	view->setScene(scene);
-	view->setViewport(this);
+	scene = new QGraphicsScene(this);
+	setScene(scene);
 
 	qRegisterMetaType<NaviSessRouteResult_ptr>("NaviSessRouteResult_ptr");
 	//scene->addItem(new nsNaviMapGraphics::QRouteLink(10, 10, 100, 100));
@@ -48,23 +54,100 @@ QMapWidget::QMapWidget(QWidget *parent)
 
 	NaviMap* map = NaviCoreEnv::instance()->map();
 	
+	// 去掉滚动条
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+	setCursor(Qt::PointingHandCursor);
+	setRenderHint(QPainter::Antialiasing);
+
+	setSceneRect(INT_MIN / 2, INT_MIN / 2, INT_MAX, INT_MAX);
+	centerOn(0, 0);
 }
 
 QMapWidget::~QMapWidget()
 {
 	
 }
-
-void QMapWidget::paintEvent(QPaintEvent *event)
+// 放大
+void QMapWidget::zoomIn()
 {
-	NaviMap* map = NaviCoreEnv::instance()->map();
-	if (map == NULL)
+	zoom(1 + m_zoomDelta);
+}
+
+// 缩小
+void QMapWidget::zoomOut()
+{
+	zoom(1 - m_zoomDelta);
+}
+// 缩放 - scaleFactor：缩放的比例因子
+void QMapWidget::zoom(float scaleFactor)
+{
+	// 防止过小或过大
+	qreal factor = transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
+	if (factor < 0.07 || factor > 100)
 		return;
-	QPainter painter(this);
 
-	map->draw(painter, &m_options);
+	scale(scaleFactor, scaleFactor);
+	m_scale *= scaleFactor;
+}
 
-	event->accept();
+void QMapWidget::wheelEvent(QWheelEvent *event)
+{
+	// 滚轮的滚动量
+	QPoint scrollAmount = event->angleDelta();
+	// 正值表示滚轮远离使用者（放大），负值表示朝向使用者（缩小）
+	scrollAmount.y() > 0 ? zoomIn() : zoomOut();
+}
+
+void QMapWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+	qDebug() << "dbl_clk - x : " << e->x() << ", y : " << e->y();
+}
+
+void QMapWidget::mousePressEvent(QMouseEvent *event)
+{
+	qDebug() << "dwn - x : " << event->x() << ", y : " << event->y();
+	// 当光标底下没有 item 时，才能移动
+	QPointF point = mapToScene(event->pos());
+	m_bMouseTranslate = true;
+	m_lastMousePos = event->pos();
+}
+
+void QMapWidget::mouseMoveEvent(QMouseEvent *event)
+{
+	qDebug() << "mov - x : " << event->x() << ", y : " << event->y();
+	if (m_bMouseTranslate){
+		QPointF mouseDelta = mapToScene(event->pos()) - mapToScene(m_lastMousePos);
+		translate(mouseDelta);
+	}
+
+	m_lastMousePos = event->pos();
+
+	QGraphicsView::mouseMoveEvent(event);
+}
+
+void QMapWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+	m_bMouseTranslate = false;
+
+	QGraphicsView::mouseReleaseEvent(event);
+}
+
+// 平移
+void QMapWidget::translate(QPointF delta)
+{
+	// 根据当前 zoom 缩放平移数
+	delta *= m_scale;
+	delta *= m_translateSpeed;
+
+	// view 根据鼠标下的点作为锚点来定位 scene
+	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+	QPoint newCenter(VIEW_WIDTH / 2 - delta.x(), VIEW_HEIGHT / 2 - delta.y());
+	centerOn(mapToScene(newCenter));
+
+	// scene 在 view 的中心点作为锚点
+	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 }
 
 void QMapWidget::onUpdateRoute(NaviSessRouteResult_ptr spResult)

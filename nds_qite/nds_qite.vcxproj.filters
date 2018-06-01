@@ -134,6 +134,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_navisess_thread.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="qrouteview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_qrouteview.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_qrouteview.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="nds_qite.h">
@@ -179,6 +188,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="navisess_thread.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="qrouteview.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
