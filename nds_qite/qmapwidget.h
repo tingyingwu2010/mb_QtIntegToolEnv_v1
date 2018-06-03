@@ -27,8 +27,6 @@ protected:
 private:
 	Ui::QMapWidget ui;
 
-//	QGraphicsScene *scene;
-//	QRouteView *routeView;
 private:
 	NaviMapDrawOptions m_options;	// 地图绘制选项
 	qreal m_translateSpeed;  // 平移速度
@@ -36,6 +34,8 @@ private:
 	bool m_bMouseTranslate;  // 平移标识
 	QPoint m_lastMousePos;  // 鼠标最后按下的位置
 	qreal m_scale;  // 缩放值
+
+	//GraphicsItemChange m_lastChangeItem
 public slots:
 	void onUpdateRoute(NaviSessRouteResult_ptr);
 	void zoomIn();  // 放大

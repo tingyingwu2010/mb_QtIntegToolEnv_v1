@@ -1,6 +1,7 @@
 ﻿#include "stdafx_qite.h"
 #include "qmapwidget.h"
 #include "qnavisession.h"
+#include "qnaviscene.h"
 
 namespace nsNaviMapGraphics
 {
@@ -12,13 +13,22 @@ namespace nsNaviMapGraphics
 		}
 		void paint(QPainter *painter,
 			const QStyleOptionGraphicsItem *option, QWidget *widget);
+		//QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+	protected:
 		void ​mousePressEvent(QGraphicsSceneMouseEvent * event);
 	};
 }
 
 void nsNaviMapGraphics::QRouteLink::​mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
-	event->accept();
+	qDebug() << "sdfasdfas";
+	if (scene())
+	{
+		foreach(auto pItm, scene()->selectedItems())
+			pItm->setSelected(false);
+		setSelected(true);
+		event->accept();
+	}
 }
 
 void nsNaviMapGraphics::QRouteLink::paint(QPainter *painter,
@@ -27,14 +37,28 @@ void nsNaviMapGraphics::QRouteLink::paint(QPainter *painter,
 	QPen newPen(pen());
 	qreal penWidth = 4.0 / option->levelOfDetailFromTransform(painter->worldTransform());
 	newPen.setWidth(penWidth);
-	if (option->state & QStyle::State_Selected) {
+	bool isSelected = option->state & QStyle::State_Selected;
+	QStyleOptionGraphicsItem sel_op;
+	if (isSelected) {
 		newPen.setStyle(Qt::DotLine);
-		newPen.setWidth(penWidth * 2);
+		sel_op.initFrom(widget);
+		sel_op.state = QStyle::State_None;;
 	}
+
 	setPen(newPen);
-	//painter->drawLine(line());
-	return QGraphicsLineItem::paint(painter, option, widget);
+
+	return QGraphicsLineItem::paint(painter, isSelected ? &sel_op : option, widget);
+	//return QGraphicsLineItem::paint(painter, option, widget);
 }
+#if 0
+QVariant nsNaviMapGraphics::QRouteLink::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+	if (change == ItemPositionChange && scene()) {
+	}
+	
+	return QGraphicsItem::itemChange(change, value);
+}
+#endif
 
 #define VIEW_CENTER viewport()->rect().center()
 #define VIEW_WIDTH  viewport()->rect().width()
@@ -48,8 +72,8 @@ QMapWidget::QMapWidget(QWidget *parent)
 , m_bMouseTranslate(false)
 {
 	ui.setupUi(this);
-	setScene(new QGraphicsScene(this));
-
+	//setScene(new QGraphicsScene(this));
+	setScene(new QNaviScene(this));
 	qRegisterMetaType<NaviSessRouteResult_ptr>("NaviSessRouteResult_ptr");
 
 	connect(QNaviSession::instance(), SIGNAL(routeResultUpdated(NaviSessRouteResult_ptr)),
@@ -83,6 +107,7 @@ void QMapWidget::zoomOut()
 {
 	zoom(1 - m_zoomDelta);
 }
+
 // 缩放 - scaleFactor：缩放的比例因子
 void QMapWidget::zoom(float scaleFactor)
 {
@@ -102,7 +127,6 @@ void QMapWidget::wheelEvent(QWheelEvent *event)
 	// 正值表示滚轮远离使用者（放大），负值表示朝向使用者（缩小）
 	scrollAmount.y() > 0 ? zoomIn() : zoomOut();
 }
-#if 1
 
 void QMapWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
@@ -110,6 +134,7 @@ void QMapWidget::mouseDoubleClickEvent(QMouseEvent *e)
 
 	QGraphicsView::mouseDoubleClickEvent(e);
 }
+
 void QMapWidget::mousePressEvent(QMouseEvent *event)
 {
 	qDebug() << "dwn - x : " << event->x() << ", y : " << event->y();
@@ -120,7 +145,7 @@ void QMapWidget::mousePressEvent(QMouseEvent *event)
 
 	QGraphicsView::mousePressEvent(event);
 }
-#endif
+
 void QMapWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	qDebug() << "mov - x : " << event->x() << ", y : " << event->y();

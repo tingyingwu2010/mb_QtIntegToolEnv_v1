@@ -32,6 +32,11 @@ void QIteApp::initWindows()
 	}
 }
 
+void QIteApp::showRouteLinkInfo()
+{
+	lad->show();
+}
+
 QIteWindow* QIteApp::getMainWindow(void)
 {
 	return w;

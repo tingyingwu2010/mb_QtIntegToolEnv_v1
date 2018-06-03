@@ -30,6 +30,7 @@ protected:
 	// To show/hide ToolBox item dynamically.
 public:
 	ToolBoxController* getToolBoxController() { return m_toolBoxController; }
+
 private:
 	ToolBoxController* m_toolBoxController;
 
