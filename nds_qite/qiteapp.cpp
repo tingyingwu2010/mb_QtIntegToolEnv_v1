@@ -32,8 +32,9 @@ void QIteApp::initWindows()
 	}
 }
 
-void QIteApp::showRouteLinkInfo()
+void QIteApp::showRouteLinkInfo(std::shared_ptr<CSectResultLinkProxy> spLink)
 {
+	lad->updateLinkInfo(spLink);
 	lad->show();
 }
 

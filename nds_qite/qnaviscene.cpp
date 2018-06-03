@@ -40,9 +40,10 @@ void QNaviScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		auto pRouteLinkItm = dynamic_cast<nsNaviMapGraphics::QRouteLink*>(pItm);
 		if (pRouteLinkItm)
 		{
-			//pRouteLinkItm->
-			g_app->showRouteLinkInfo();
+			auto spLink = pRouteLinkItm->getLinkProxy();
+			g_app->showRouteLinkInfo(spLink);
 		}
+
 		QGraphicsScene::mousePressEvent(event); // this forwards the event to the item
 	}
 }

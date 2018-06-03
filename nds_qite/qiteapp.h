@@ -4,6 +4,7 @@
 #include <QtWidgets/QApplication>
 #include "qitewindow.h"
 #include "qndslinkattrdialog.h"
+#include "navapi_route.hpp"
 
 class QIteApp : public QApplication
 {
@@ -20,7 +21,7 @@ protected:
 public slots:
 	// 初始化窗口
 	void initWindows(void);
-	void showRouteLinkInfo();	// 获取主窗口的指针
+	void showRouteLinkInfo(std::shared_ptr<CSectResultLinkProxy>);	// 获取主窗口的指针
 	QIteWindow* getMainWindow(void);
 };
 

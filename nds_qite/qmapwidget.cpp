@@ -112,8 +112,8 @@ void QMapWidget::zoom(float scaleFactor)
 {
 	// 防止过小或过大
 	qreal factor = transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
-	//if ( factor < 0.0007 || factor > 100)
-	//	return;
+	if ( factor < 0.0007 || factor > 100)
+		return;
 
 	scale(scaleFactor, scaleFactor);
 	m_scale *= scaleFactor;

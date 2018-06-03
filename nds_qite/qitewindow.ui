@@ -21,6 +21,12 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QToolBox" name="toolBox">
+       <property name="minimumSize">
+        <size>
+         <width>300</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="currentIndex">
         <number>0</number>
        </property>
@@ -98,8 +104,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>732</width>
-          <height>675</height>
+          <width>100</width>
+          <height>30</height>
          </rect>
         </property>
         <attribute name="label">

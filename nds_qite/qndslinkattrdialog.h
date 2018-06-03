@@ -3,6 +3,7 @@
 
 #include <QDockWidget>
 #include "ui_qndslinkattrdialog.h"
+#include "navapi_route.hpp"
 
 class QNDSLinkAttrDialog : public QDockWidget
 {
@@ -12,6 +13,7 @@ public:
 	QNDSLinkAttrDialog(QWidget *parent = 0);
 	~QNDSLinkAttrDialog();
 
+	void updateLinkInfo(std::shared_ptr<CSectResultLinkProxy>);
 private:
 	Ui::QNDSLinkAttrDialog ui;
 };

@@ -17,6 +17,7 @@ namespace nsNaviMapGraphics
 		void paint(QPainter *painter,
 			const QStyleOptionGraphicsItem *option, QWidget *widget);
 		//QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+		std::shared_ptr<CSectResultLinkProxy> getLinkProxy() const { return m_pLinkProxy; }
 	protected:
 		void ​mousePressEvent(QGraphicsSceneMouseEvent * event);
 		std::shared_ptr<CSectResultLinkProxy> m_pLinkProxy;
