@@ -213,5 +213,8 @@
     <ClInclude Include="navi_2d_map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="qnavimap_graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,9 +3,7 @@
 
 #include <QMetaType>
 #include <QObject>
-#include <memory>
-#include <tuple>
-#include <vector>
+#include "navapi_session.hpp"
 
 namespace nsNaviSess
 {
@@ -31,6 +29,9 @@ namespace nsNaviSess
 typedef std::shared_ptr<nsNaviSess::CRouteResult> NaviSessRouteResult_ptr;
 Q_DECLARE_METATYPE(NaviSessRouteResult_ptr);
 
+
+typedef std::shared_ptr<CSectResultProxy> NdsSessRouteResult_ptr;
+Q_DECLARE_METATYPE(NdsSessRouteResult_ptr);
 class QNaviSession : public QObject
 {
 	Q_OBJECT
@@ -46,6 +47,7 @@ public:
 	void onAcquireExtractedRouteResult();
 signals:
 	void routeResultUpdated(NaviSessRouteResult_ptr); // added by wxl
+	void routeResultUpdated(NdsSessRouteResult_ptr); // added by wxl
 private:
 	CPrivate* mp;
 };

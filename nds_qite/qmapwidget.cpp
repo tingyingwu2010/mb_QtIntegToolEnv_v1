@@ -1,23 +1,9 @@
 ﻿#include "stdafx_qite.h"
+#include "qnavimap_graphics.h"
 #include "qmapwidget.h"
 #include "qnavisession.h"
 #include "qnaviscene.h"
 
-namespace nsNaviMapGraphics
-{
-	class QRouteLink : public QGraphicsLineItem
-	{
-	public:
-		QRouteLink(int x1, int y1, int x2, int y2) : QGraphicsLineItem(x1, y1, x2, y2) {
-			setFlags(ItemIsSelectable);
-		}
-		void paint(QPainter *painter,
-			const QStyleOptionGraphicsItem *option, QWidget *widget);
-		//QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-	protected:
-		void ​mousePressEvent(QGraphicsSceneMouseEvent * event);
-	};
-}
 
 void nsNaviMapGraphics::QRouteLink::​mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
@@ -31,11 +17,21 @@ void nsNaviMapGraphics::QRouteLink::​mousePressEvent(QGraphicsSceneMouseEvent 
 	}
 }
 
+nsNaviMapGraphics::QRouteLink::QRouteLink(int x0, int y0, std::shared_ptr<CSectResultLinkProxy> pProxy) :  m_pLinkProxy(pProxy)
+{
+	setFlags(ItemIsSelectable);
+	int x1, y1, x2, y2;
+	pProxy->getStartPos(x1, y1);
+	pProxy->getEndPos(x2, y2);
+	setLine(x1 - x0, y1 - y0, x2 - x0, y2 - y0);
+}
+
 void nsNaviMapGraphics::QRouteLink::paint(QPainter *painter,
 	const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 	QPen newPen(pen());
-	qreal penWidth = 4.0 / option->levelOfDetailFromTransform(painter->worldTransform());
+	auto detailLevel = option->levelOfDetailFromTransform(painter->worldTransform());
+	qreal penWidth = 4.0 / detailLevel;
 	newPen.setWidth(penWidth);
 	bool isSelected = option->state & QStyle::State_Selected;
 	QStyleOptionGraphicsItem sel_op;
@@ -75,9 +71,12 @@ QMapWidget::QMapWidget(QWidget *parent)
 	//setScene(new QGraphicsScene(this));
 	setScene(new QNaviScene(this));
 	qRegisterMetaType<NaviSessRouteResult_ptr>("NaviSessRouteResult_ptr");
+	qRegisterMetaType<NaviSessRouteResult_ptr>("NdsSessRouteResult_ptr");
 
-	connect(QNaviSession::instance(), SIGNAL(routeResultUpdated(NaviSessRouteResult_ptr)),
-		this, SLOT(onUpdateRoute(NaviSessRouteResult_ptr)));
+	//connect(QNaviSession::instance(), SIGNAL(routeResultUpdated(NaviSessRouteResult_ptr)),
+	//	this, SLOT(onUpdateRoute(NaviSessRouteResult_ptr)));
+	connect(QNaviSession::instance(), SIGNAL(routeResultUpdated(NdsSessRouteResult_ptr)),
+		this, SLOT(onUpdateRoute(NdsSessRouteResult_ptr)));
 
 	NaviMap* map = NaviCoreEnv::instance()->map();
 	
@@ -113,8 +112,8 @@ void QMapWidget::zoom(float scaleFactor)
 {
 	// 防止过小或过大
 	qreal factor = transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
-	if (factor < 0.0007 || factor > 100)
-		return;
+	//if ( factor < 0.0007 || factor > 100)
+	//	return;
 
 	scale(scaleFactor, scaleFactor);
 	m_scale *= scaleFactor;
@@ -199,7 +198,7 @@ void QMapWidget::onUpdateRoute(NaviSessRouteResult_ptr spResult)
 			auto x1 = rLnk.mPosVec[0].x - spResult->mLinkVec[0].mPosVec[0].x;
 			auto y1 = rLnk.mPosVec[0].y - spResult->mLinkVec[0].mPosVec[0].y;
 			auto x2 = rLnk.mPosVec[1].x - spResult->mLinkVec[0].mPosVec[0].x;
-			auto y2 = rLnk.mPosVec[1].y - spResult->mLinkVec[0].mPosVec[0].y;
+			auto y2 = rLnk.mPosVec[1].y - spResult->mLinkVec[0].mPosVec[0].y; 
 			auto pRouteLink = new nsNaviMapGraphics::QRouteLink(x1, y1,	x2,	y2);
 			scene()->addItem(pRouteLink);
 		}
@@ -208,5 +207,57 @@ void QMapWidget::onUpdateRoute(NaviSessRouteResult_ptr spResult)
 	if (!scene()->items().empty())
 	{
 		//scene()->setSceneRect(scene()->itemsBoundingRect());
+	}
+}
+void QMapWidget::onUpdateRoute(NdsSessRouteResult_ptr spResult)
+{
+	qDebug() << "map widget invoke onUpdateRoute() link number is" << spResult->getLinkNum() << ".";
+
+	if (scene())
+	{
+		auto ps = scene();
+		while (!ps->items().empty())
+		{
+			delete dynamic_cast<nsNaviMapGraphics::QRouteLink*>(ps->items().last());
+			ps->items().removeLast();
+		}
+
+		int x0, y0, x1, y1, x2, y2;
+		QRectF rect0;
+		QGraphicsItem* pCenterItm = NULL;
+		for (size_t i = 0; i < spResult->getLinkNum(); i++)
+		{
+			auto pLink = spResult->getLinkAt(i);
+			pLink->getStartPos(x1, y1);
+			pLink->getEndPos(x2, y2);
+			if (0 ==i)
+			{
+				x0 = x1;
+				y0 = y1;
+			}
+			pCenterItm = new nsNaviMapGraphics::QRouteLink(x0, y0, pLink);
+			ps->addItem(pCenterItm);
+
+			QRectF rect2(std::min(x1, x2), std::min(y1, y2), std::abs(x1 - x2), std::abs(y1 - y2));
+			if (0 == i)
+			{
+				rect0 = rect2;
+			}
+			else
+			{
+				rect0.united(rect2);
+			}
+		}
+
+		if (false && rect0.isValid())
+		{
+			//ps->setSceneRect(rect0);
+			auto longer = std::max(rect0.width(), rect0.height());
+			m_scale = 100 / longer;
+			//setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+			//centerOn(pCenterItm);
+			//(QGraphicsView::AnchorViewCenter);
+			zoom(m_scale);
+		}
 	}
 }

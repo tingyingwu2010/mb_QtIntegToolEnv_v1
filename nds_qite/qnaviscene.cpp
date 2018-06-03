@@ -6,6 +6,7 @@
 #include <QtGui>
 #endif
 #include "qiteapp.h"
+#include "qnavimap_graphics.h"
 
 QNaviScene::QNaviScene(QObject *parent)
 	: QGraphicsScene(parent)
@@ -29,13 +30,19 @@ void QNaviScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		update();
 	}
 
-	if (itemAt(event->buttonDownScenePos(Qt::LeftButton), transform) == NULL)
+	auto pItm = itemAt(event->buttonDownScenePos(Qt::LeftButton), transform);
+	if (pItm == NULL)
 	{
 		// do stuff if not clicked on an item
 	}
 	else
 	{
-		g_app->showRouteLinkInfo();
+		auto pRouteLinkItm = dynamic_cast<nsNaviMapGraphics::QRouteLink*>(pItm);
+		if (pRouteLinkItm)
+		{
+			//pRouteLinkItm->
+			g_app->showRouteLinkInfo();
+		}
 		QGraphicsScene::mousePressEvent(event); // this forwards the event to the item
 	}
 }

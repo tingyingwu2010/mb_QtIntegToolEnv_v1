@@ -1,6 +1,6 @@
 #include "qnavisession.h"
 #include "navisess_thread.h"
-#include "NaviApiDll.hpp"
+#include "navapi_session.hpp"
 #include <QDebug>
 #include <QMessageBox>
 #include <tuple>
@@ -332,7 +332,8 @@ void QNaviSession::onAcquireExtractedRouteResult()
 				spRetResult->mLinkVec.emplace_back(RetLink);
 				qDebug() << "#" << i << " " << x1 << "," << y1 << "-" << x2 << "," << y2;
 			}
-			emit routeResultUpdated(spRetResult);
+			//emit routeResultUpdated(spRetResult);
+			emit routeResultUpdated(spResult);
 			qDebug() << "SID[" << nsNaviSess::spCurCtx->m_sid << "] : on acqired the extracted route result";
 		}
 		else

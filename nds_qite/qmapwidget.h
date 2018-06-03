@@ -38,6 +38,7 @@ private:
 	//GraphicsItemChange m_lastChangeItem
 public slots:
 	void onUpdateRoute(NaviSessRouteResult_ptr);
+	void onUpdateRoute(NdsSessRouteResult_ptr);
 	void zoomIn();  // 放大
 	void zoomOut();  // 缩小
 	void zoom(float scaleFactor); // 缩放 - scaleFactor：缩放的比例因子
